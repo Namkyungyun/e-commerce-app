@@ -15,6 +15,8 @@
 // * docs : firebase messaaging section in flutterfire docs
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import '../../app.dart';
+import '../util/snackbar_context_extension.dart';
 
 class FcmManager {
   // 내부적으로는 필드를 들고 있지 않고 초기화만 해주면 된다.
@@ -24,6 +26,29 @@ class FcmManager {
 
   // 사용자의 토큰 가져오기
   static void initialize() async {
+    /// Foreground
+    /// 해당 파트에서 listen을 통해 넘어오는 Stream객체는 remote message 자체가 된다.
+    FirebaseMessaging.onMessage.listen((message) {
+      /// message 객체 안에서 deeplink와 같은 map타입의 데이터는 'data'안에 있으며,
+      /// title과 message의 경우 'notification'객체안에 들어가 있음.
+      final title = message.notification?.title;
+      if (title == null) {
+        return;
+      }
+
+      App.navigatorKey.currentContext?.showSnackbar(title);
+    });
+
+    ///
+    ///
+    ///
+    /// Background
+    ///
+    ///
+    ///
+    ///
+    /// Not running -> initial launch
+
     final token = await FirebaseMessaging.instance.getToken();
     print(token);
   }
